@@ -23,7 +23,6 @@ for real-world deployment**, as it does not have proper management of user data.
 | `src/`                   | The issuer canister (Rust).                                                           |
 | `app/`                   | The issuer's self-registration frontend (React), embedded into the canister.          |
 | `vc_demo_issuer.did`     | The canister's Candid interface. Internet Identity generates bindings from this file. |
-| `provision`              | Configures a deployed issuer canister for a given environment.                        |
 | `crates/asset_util`      | Asset certification helpers, vendored from Internet Identity.                         |
 | `crates/ii_test_support` | Internet Identity wire types and PocketIC helpers, used by the tests only.            |
 
@@ -81,22 +80,24 @@ Internet Identity consumes this repository's **GitHub Releases**: it pins a tag
 in its `.github/versions/vc-issuer` file and downloads the release assets, so it
 never builds the issuer from source.
 
-Push a `release-*` tag to publish a release:
+Push a `release-<year>-<month>-<day>` tag to publish a release, matching
+Internet Identity's own tag convention — these releases are consumed by II
+rather than published to a registry, so they are dated rather than versioned:
 
 ```bash
-git tag release-1.0.0
-git push origin release-1.0.0
+git tag release-2026-08-03
+git push origin release-2026-08-03
 ```
 
 `.github/workflows/release.yml` builds the canister and publishes these assets.
 The names are part of the contract with Internet Identity and must not change:
 
-| Asset                           | Consumed by                                            |
-| ------------------------------- | ------------------------------------------------------ |
-| `vc_demo_issuer.wasm.gz`        | II's mainnet deploy job and local `icp deploy issuer`. |
-| `vc_demo_issuer.wasm.gz.sha256` | Integrity check in II's `scripts/fetch-vc-issuer`.     |
-| `vc_demo_issuer.did`            | II's `didc bind` codegen for the issuer's JS/TS types. |
-| `provision`                     | Executed by II's deploy job after installing the wasm. |
+| Asset                           | Consumed by                                                               |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `vc_demo_issuer.wasm.gz`        | II's mainnet deploy job and local `icp deploy issuer`.                    |
+| `vc_demo_issuer.wasm.gz.sha256` | Integrity check for the wasm, verified in II's `scripts/fetch-vc-issuer`. |
+| `vc_demo_issuer.did`            | II's `didc bind` codegen for the issuer's JS/TS types.                    |
+| `vc_demo_issuer.did.sha256`     | Integrity check for the did, verified in II's `scripts/fetch-vc-issuer`.  |
 
 After a release, II's scheduled bump workflow opens a pull request moving
 `.github/versions/vc-issuer` to the new tag, refreshing II's vendored copy of
@@ -106,9 +107,10 @@ After a release, II's scheduled bump workflow opens a pull request moving
 
 To use the demo issuer in a testing setup, the issuer canister has to be
 configured to match the environment, i.e. it has to use the correct root public
-key, and accept requests from the correct II canister — see the
-[`provision` script](./provision) for details. `icp.yaml.example` shows a minimal
-icp-cli project that builds and provisions the issuer alongside a remote II.
+key, and accept requests from the correct II canister. Internet Identity does
+this with its own `scripts/provision-issuer`, which calls the canister's
+`configure` method; `icp.yaml.example` shows a minimal icp-cli project that
+builds the issuer alongside a remote II.
 
 ## Contributing
 
