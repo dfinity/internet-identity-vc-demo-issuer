@@ -6,7 +6,6 @@ name: Release
 #
 #   vc_demo_issuer.wasm.gz   the canister module
 #   vc_demo_issuer.did       II's `didc bind` codegen input
-#   provision                the script II's deploy job runs after installing
 on:
   push:
     tags: ["release-*"]
@@ -27,12 +26,11 @@ jobs:
       - name: "Build VC issuer canister"
         run: ./build.sh
 
-      # Every asset is checksummed, not just the wasm: Internet Identity
-      # executes `provision` after downloading it, so it needs to verify that
-      # file too.
+      # Both assets are checksummed so Internet Identity can verify what it
+      # downloads.
       - name: "Checksums"
         run: |
-          shasum -a 256 vc_demo_issuer.wasm.gz vc_demo_issuer.did provision > SHA256SUMS
+          shasum -a 256 vc_demo_issuer.wasm.gz vc_demo_issuer.did > SHA256SUMS
           cat SHA256SUMS
 
       - name: "Publish release"
@@ -46,5 +44,4 @@ jobs:
             --generate-notes \
             vc_demo_issuer.wasm.gz \
             vc_demo_issuer.did \
-            provision \
             SHA256SUMS
