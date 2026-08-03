@@ -94,7 +94,7 @@ The names are part of the contract with Internet Identity and must not change:
 | Asset                           | Consumed by                                            |
 | ------------------------------- | ------------------------------------------------------ |
 | `vc_demo_issuer.wasm.gz`        | II's mainnet deploy job and local `icp deploy issuer`. |
-| `vc_demo_issuer.wasm.gz.sha256` | Integrity check in II's `scripts/fetch-vc-issuer`.     |
+| `SHA256SUMS`                    | Integrity check for every asset above, verified in II's `scripts/fetch-vc-issuer`. |
 | `vc_demo_issuer.did`            | II's `didc bind` codegen for the issuer's JS/TS types. |
 | `provision`                     | Executed by II's deploy job after installing the wasm. |
 
