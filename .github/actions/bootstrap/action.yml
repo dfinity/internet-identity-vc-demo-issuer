@@ -1,0 +1,17 @@
+name: "bootstrap"
+description: Bootstrap the VC demo issuer build environment (rustup + ic-wasm)
+runs:
+  using: "composite"
+  steps:
+    # Cache ic-wasm and the rustup toolchain, but not the cargo target dir:
+    # callers that need that cache set it up themselves.
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/ic-wasm
+          ~/.rustup
+        key: cargo-bin-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'scripts/bootstrap') }}
+
+    - name: Bootstrap
+      shell: bash
+      run: ./scripts/bootstrap

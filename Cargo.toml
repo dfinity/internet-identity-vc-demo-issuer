@@ -1,4 +1,5 @@
 [workspace]
+members = ["crates/asset_util", "crates/ii_test_support"]
 
 [package]
 name = "vc_issuer"
@@ -8,8 +9,7 @@ edition = "2021"
 
 [dependencies]
 # local dependencies
-internet_identity_interface = { path = "../../src/internet_identity_interface" }
-asset_util = { path = "../../src/asset_util" }
+asset_util = { path = "crates/asset_util" }
 # ic dependencies
 candid = "0.10"
 ic-canister-sig-creation = "1.1"
@@ -39,4 +39,9 @@ candid_parser = "0.1"
 ic-http-certification = "2.6"
 pocket-ic = "15"
 ic-response-verification = "2.6"
-canister_tests = { path = "../../src/canister_tests" }
+ii_test_support = { path = "crates/ii_test_support" }
+
+[profile.release]
+debug = false   # stripped by ic-wasm anyway
+lto = true
+opt-level = 'z'

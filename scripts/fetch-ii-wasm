@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Download the Internet Identity canister Wasm from the latest
+# `dfinity/internet-identity` release to `./internet_identity.wasm.gz`, where
+# `ii_test_support::framework::II_WASM` looks for it.
+#
+# NOTE: this deliberately tracks `latest` rather than a pinned tag. The point of
+# the integration tests is to catch the issuer drifting away from the II release
+# that dapps actually talk to, so a new II release must be able to turn this
+# repository's CI red. The scheduled run in `.github/workflows/ci.yml` exists so
+# that happens even when nobody opens a pull request.
+#
+# `dfinity/internet-identity` is public, so no token is needed here.
+
+set -euo pipefail
+
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPTS_DIR/.."
+
+url="https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_production.wasm.gz"
+echo "Downloading Internet Identity Wasm from the latest release" >&2
+curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error "$url" -o internet_identity.wasm.gz
+shasum -a 256 internet_identity.wasm.gz

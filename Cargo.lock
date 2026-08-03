@@ -103,7 +103,6 @@ dependencies = [
  "ic-certification 3.0.3",
  "ic-representation-independent-hash 3.0.3",
  "include_dir",
- "internet_identity_interface",
  "lazy_static",
  "serde",
  "serde_cbor",
@@ -446,29 +445,6 @@ dependencies = [
  "num-bigint",
  "pretty",
  "thiserror 1.0.63",
-]
-
-[[package]]
-name = "canister_tests"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "candid",
- "flate2",
- "hex",
- "ic-cdk 0.16.0",
- "ic-representation-independent-hash 3.0.3",
- "ic-verifiable-credentials",
- "identity_jose",
- "internet_identity_interface",
- "lazy_static",
- "pocket-ic",
- "regex",
- "serde",
- "serde_bytes",
- "serde_cbor",
- "sha2 0.10.9",
- "url",
 ]
 
 [[package]]
@@ -1557,23 +1533,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ic-http-certification"
-version = "3.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d1a65b0ffb568e954750067f660e254f4564394f5c064a88e0e93b2eea4a532"
-dependencies = [
- "base64 0.22.1",
- "candid",
- "http 1.1.0",
- "ic-certification 3.0.3",
- "ic-representation-independent-hash 3.0.3",
- "serde",
- "serde_cbor",
- "thiserror 1.0.63",
- "urlencoding",
-]
-
-[[package]]
 name = "ic-management-canister-types"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1618,7 +1577,7 @@ dependencies = [
  "ic-cbor",
  "ic-certificate-verification",
  "ic-certification 2.6.0",
- "ic-http-certification 2.6.0",
+ "ic-http-certification",
  "ic-representation-independent-hash 2.6.0",
  "leb128",
  "log",
@@ -1844,6 +1803,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ii_test_support"
+version = "0.1.0"
+dependencies = [
+ "candid",
+ "lazy_static",
+ "pocket-ic",
+ "serde",
+ "serde_bytes",
+ "url",
+]
+
+[[package]]
 name = "include_dir"
 version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1890,17 +1861,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e0242819d153cba4b4b05a5a8f2a7e9bbf97b6055b2a002b395c96b5ff3c0222"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "internet_identity_interface"
-version = "0.1.0"
-dependencies = [
- "candid",
- "ic-cdk 0.16.0",
- "ic-http-certification 3.0.3",
- "serde",
- "serde_bytes",
 ]
 
 [[package]]
@@ -3856,19 +3816,18 @@ dependencies = [
  "asset_util",
  "candid",
  "candid_parser",
- "canister_tests",
  "hex",
  "ic-canister-sig-creation",
  "ic-cdk 0.16.0",
  "ic-cdk-macros 0.16.0",
  "ic-certification 3.0.3",
  "ic-crypto-getrandom-for-wasm",
- "ic-http-certification 2.6.0",
+ "ic-http-certification",
  "ic-response-verification",
  "ic-stable-structures",
  "ic-verifiable-credentials",
+ "ii_test_support",
  "include_dir",
- "internet_identity_interface",
  "lazy_static",
  "pocket-ic",
  "serde",

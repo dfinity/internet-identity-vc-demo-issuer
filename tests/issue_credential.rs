@@ -2,10 +2,6 @@
 
 use assert_matches::assert_matches;
 use candid::{CandidType, Deserialize, Principal};
-use canister_tests::api::http_request;
-use canister_tests::api::internet_identity::vc_mvp as ii_api;
-use canister_tests::flows;
-use canister_tests::framework::{env, get_wasm_path, principal_1, test_principal, time, II_WASM};
 use ic_canister_sig_creation::{
     extract_raw_root_pk_from_der, CanisterSigPublicKey, IC_ROOT_PK_DER,
 };
@@ -22,11 +18,13 @@ use ic_verifiable_credentials::{
     get_verified_id_alias_from_jws, validate_claims_match_spec,
     verify_credential_jws_with_canister_id,
 };
-use internet_identity_interface::http_gateway::{HttpRequest, HttpResponse};
-use internet_identity_interface::internet_identity::types::vc_mvp::{
-    GetIdAliasRequest, PrepareIdAliasRequest,
+use ii_test_support::api::http_request;
+use ii_test_support::api::vc_mvp as ii_api;
+use ii_test_support::flows;
+use ii_test_support::framework::{env, get_wasm_path, principal_1, test_principal, time, II_WASM};
+use ii_test_support::types::{
+    FrontendHostname, GetIdAliasRequest, HttpRequest, HttpResponse, PrepareIdAliasRequest,
 };
-use internet_identity_interface::internet_identity::types::FrontendHostname;
 use lazy_static::lazy_static;
 use pocket_ic::{call_candid, call_candid_as};
 use pocket_ic::{query_candid_as, PocketIc, RejectResponse};

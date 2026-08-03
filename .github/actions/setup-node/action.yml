@@ -1,0 +1,13 @@
+name: "Setup nodejs"
+description: Setup the node version pinned in .node-version
+runs:
+  using: "composite"
+  steps:
+    - name: Read .node-version
+      shell: bash
+      id: read-node-version
+      run: echo "version=$(cat .node-version)" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ steps.read-node-version.outputs.version }}

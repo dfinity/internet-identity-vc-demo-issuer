@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+  # The integration tests run against Internet Identity's *latest release*, not
+  # against a pinned version, so a new II release can break this repository
+  # without anything changing here. The weekly run surfaces that drift on its
+  # own instead of waiting for the next pull request.
+  schedule:
+    - cron: "0 5 * * MON"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build (vc_demo_issuer.wasm.gz)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('Cargo.lock', 'rust-toolchain.toml') }}
+      - uses: ./.github/actions/bootstrap
+      - uses: ./.github/actions/setup-node
+      - run: npm ci
+      - name: "Build VC issuer canister"
+        run: ./build.sh
+      - run: sha256sum vc_demo_issuer.wasm.gz
+      - name: "Upload VC issuer"
+        uses: actions/upload-artifact@v4
+        with:
+          name: vc_demo_issuer.wasm.gz
+          path: vc_demo_issuer.wasm.gz
+
+  cargo-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/bootstrap
+      - name: Cargo fmt
+        run: |
+          rustup component add rustfmt
+          cargo fmt --all --check
+
+  cargo-clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('Cargo.lock', 'rust-toolchain.toml') }}
+      - uses: ./.github/actions/bootstrap
+      - run: rustup component add clippy
+      - name: Cargo clippy
+        # We run clippy twice (once without tests), so that it accurately reports dead code in the non-test configuration.
+        # `manual_range_contains` is disabled because a >= x && a < y reads more clearly than (x..y).contains(a) and
+        # there are additional caveats for floating point numbers (https://github.com/rust-lang/rust-clippy/issues/6455)
+        run: |
+          # The canister embeds ./dist at compile time; dummy assets are enough for a type check.
+          mkdir -p dist
+          touch dist/index.{html,css,js}
+          touch dist/index2.js
+
+          cargo clippy --all-targets -- -D clippy::all -D warnings -A clippy::manual_range_contains
+          cargo clippy -- -D clippy::all -D warnings -A clippy::manual_range_contains
+
+  check-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/bootstrap
+        # fails if lockfile is out of date
+        # https://users.rust-lang.org/t/check-if-the-cargo-lock-is-up-to-date-without-building-anything/91048/5
+      - name: Cargo Lockfile Check
+        run: cargo update --workspace --locked
+
+  frontend-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      - run: npm ci
+      - name: Run tsc
+        run: npm run check
+      - name: Check formatting
+        run: npm run format-check
+      - uses: ./.github/actions/setup-didc
+      - name: Generate type interfaces
+        run: npm run generate
+      - name: Check generated interfaces are up to date
+        run: |
+          if ! git diff --exit-code -- app/generated; then
+            echo "app/generated is out of date — run 'npm run generate' and commit the result." >&2
+            exit 1
+          fi
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-tests-${{ hashFiles('Cargo.lock', 'rust-toolchain.toml') }}
+      - uses: ./.github/actions/bootstrap
+      - name: "Download VC issuer wasm"
+        uses: actions/download-artifact@v4
+        with:
+          name: vc_demo_issuer.wasm.gz
+          path: .
+      - name: "Download Internet Identity wasm"
+        run: ./scripts/fetch-ii-wasm
+      - name: Read pinned PocketIC server version
+        id: pocket-ic-version
+        run: echo "version=$(sed 's/#.*$//' .pocket-ic-version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+      - name: Install PocketIC server
+        # The server version has to match the `pocket-ic` crate; `latest` fails
+        # every test with an unrelated-looking error.
+        uses: dfinity/pocketic@main
+        with:
+          pocket-ic-server-version: ${{ steps.pocket-ic-version.outputs.version }}
+      - name: "Run VC issuer canister tests"
+        run: |
+          # The test binary links the canister crate, which embeds ./dist.
+          mkdir -p dist
+          touch dist/index.{html,css,js}
+          touch dist/index2.js
+          cargo test
+        env:
+          RUST_BACKTRACE: 1

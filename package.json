@@ -4,7 +4,6 @@
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
-    "@dfinity/utils": "^4.0.2",
     "@icp-sdk/auth": "^4.2.0",
     "@icp-sdk/core": "^4.2.3",
     "buffer": "^6.0.3",
@@ -16,17 +15,24 @@
     "check": "tsc --noEmit",
     "watch": "npm run check -- --watch",
     "build": "npm run check && vite --config ./vite.config.ts build",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
     "generate": "npm run generate:types && npm run generate:js",
-    "generate:types": "didc bind ./vc_demo_issuer.did -t ts > ./app/generated/vc_issuer_types.d.ts",
-    "generate:js": "didc bind ./vc_demo_issuer.did -t js > ./app/generated/vc_issuer_idl.js"
+    "generate:types": "didc bind ./vc_demo_issuer.did -t ts | ./scripts/rewrite-dfinity-imports > ./app/generated/vc_issuer_types.d.ts",
+    "generate:js": "didc bind ./vc_demo_issuer.did -t js | ./scripts/rewrite-dfinity-imports > ./app/generated/vc_issuer_idl.js"
   },
   "devDependencies": {
-    "@dfinity/internet-identity-vite-plugins": "*",
+    "@types/node": "^25.4.0",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^5.1.4",
+    "prettier": "3.8.1",
     "typescript": "5.2.2",
     "vite": "^7.3.2",
     "vite-plugin-node-polyfills": "^0.25.0"
+  },
+  "engines": {
+    "npm": ">=11.0.0 <12.0.0",
+    "node": ">=24.0.0 <25.0.0"
   }
 }

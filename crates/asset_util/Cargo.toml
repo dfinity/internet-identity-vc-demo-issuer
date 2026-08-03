@@ -1,0 +1,22 @@
+[package]
+name = "asset_util"
+description = "Asset certification utility library for asset serving canisters"
+version = "0.1.0"
+edition = "2021"
+
+# Vendored from dfinity/internet-identity (`src/asset_util`). The only change is
+# that `HeaderField` is defined locally instead of imported from
+# `internet_identity_interface`, so this crate has no dependency on II.
+
+[dependencies]
+base64 = "0.22"
+candid = "0.10"
+ic-cdk = "0.16"
+ic-cdk-macros = "0.16"
+ic-certification = "3.0.3"
+ic-representation-independent-hash = "3.0.3"
+include_dir = "0.7"
+lazy_static = "1.5"
+serde = { version = "1", features = ["derive"] }
+serde_cbor = "0.11"
+sha2 = "0.10"

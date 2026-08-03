@@ -1,0 +1,16 @@
+[package]
+name = "ii_test_support"
+description = "Internet Identity wire types and PocketIC helpers used by the issuer integration tests"
+version = "0.1.0"
+edition = "2021"
+
+# This crate is only ever used as a dev-dependency, so nothing here ends up in
+# the released issuer Wasm.
+
+[dependencies]
+candid = "0.10"
+lazy_static = "1.5"
+pocket-ic = "15"
+serde = { version = "1", features = ["derive"] }
+serde_bytes = "0.11"
+url = "2.5"

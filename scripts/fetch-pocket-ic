@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Download the PocketIC server binary pinned in `.pocket-ic-version` to
+# `./pocket-ic`, where `ii_test_support::framework::env` looks for it.
+
+set -euo pipefail
+
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPTS_DIR/.."
+
+version=$(sed 's/#.*$//' .pocket-ic-version | tr -d '[:space:]')
+if [ -z "$version" ]; then
+    echo "Error: .pocket-ic-version is empty after stripping comments." >&2
+    exit 1
+fi
+
+case "$(uname -s)" in
+    Darwin) os=darwin ;;
+    Linux) os=linux ;;
+    *) echo "Error: unsupported OS '$(uname -s)'." >&2; exit 1 ;;
+esac
+
+# The release ships a native build per architecture. Picking the wrong one
+# fails with a misleading loader/exec-format error rather than a clear message.
+case "$(uname -m)" in
+    x86_64) arch=x86_64 ;;
+    arm64 | aarch64) arch=arm64 ;;
+    *) echo "Error: unsupported architecture '$(uname -m)'." >&2; exit 1 ;;
+esac
+
+url="https://github.com/dfinity/pocketic/releases/download/${version}/pocket-ic-${arch}-${os}.gz"
+echo "Downloading PocketIC server $version for $arch-$os" >&2
+curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error "$url" -o pocket-ic.gz
+gunzip --force pocket-ic.gz
+chmod +x pocket-ic
+./pocket-ic --version

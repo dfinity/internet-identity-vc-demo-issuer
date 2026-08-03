@@ -1,0 +1,5 @@
+# The PocketIC *server* version the integration tests run against. It must
+# match the `pocket-ic` crate major version in Cargo.toml (currently 15) and
+# the version Internet Identity pins in `scripts/test-canisters.sh` — a
+# mismatched server rejects every request with a misleading error.
+15.0.0

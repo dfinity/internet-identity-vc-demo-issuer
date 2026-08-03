@@ -1,8 +1,5 @@
-import {
-  getReplicaHost,
-  injectCanisterIdPlugin,
-} from "@dfinity/internet-identity-vite-plugins";
 import { defineConfig } from "vite";
+import { getReplicaHost, injectCanisterIdPlugin } from "./vite-plugins";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig(({ command, mode }) => ({

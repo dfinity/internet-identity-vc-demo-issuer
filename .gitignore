@@ -1,0 +1,31 @@
+# Various IDEs and Editors
+.vscode/
+.idea/
+**/*~
+.windsurf/
+.claude/
+
+# Mac OSX temporary files
+.DS_Store
+**/.DS_Store
+
+# icp-cli temporary files
+.icp/
+
+# frontend code
+node_modules/
+dist/
+.env
+
+# Cargo build output
+target/
+
+# built canisters
+*.wasm
+*.wasm.gz
+
+# Test fixtures fetched at test time
+pocket-ic
+pocket-ic-port
+
+*.tsbuildinfo

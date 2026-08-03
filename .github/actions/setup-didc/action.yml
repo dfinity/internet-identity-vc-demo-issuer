@@ -1,0 +1,33 @@
+name: "Setup didc"
+description: Install the didc release pinned in .didc-release, verified against .didc-checksums
+runs:
+  using: "composite"
+  steps:
+    - name: Install didc
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        didc_release=$(sed <.didc-release 's/#.*$//' | sed '/^$/d')
+        expected_sha=$(awk '/^[[:space:]]*#/ {next} /^[[:space:]]*$/ {next} $1 == "linux64" { print $2; exit }' .didc-checksums)
+
+        if [ -z "$expected_sha" ]; then
+          echo "No sha256 pinned for linux64 in .didc-checksums" >&2
+          exit 1
+        fi
+
+        mkdir -p ~/.local/bin
+        curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
+          "https://github.com/dfinity/candid/releases/download/$didc_release/didc-linux64" \
+          -o ~/.local/bin/didc
+
+        actual_sha=$(shasum -a 256 ~/.local/bin/didc | cut -d ' ' -f1)
+        if [ "$actual_sha" != "$expected_sha" ]; then
+          rm -f ~/.local/bin/didc
+          echo "didc checksum mismatch: expected $expected_sha, got $actual_sha" >&2
+          exit 1
+        fi
+
+        chmod +x ~/.local/bin/didc
+        ~/.local/bin/didc --version
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
