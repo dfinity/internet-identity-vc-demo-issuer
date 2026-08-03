@@ -81,11 +81,11 @@ Internet Identity consumes this repository's **GitHub Releases**: it pins a tag
 in its `.github/versions/vc-issuer` file and downloads the release assets, so it
 never builds the issuer from source.
 
-Push a `v*` tag to publish a release:
+Push a `release-*` tag to publish a release:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag release-1.0.0
+git push origin release-1.0.0
 ```
 
 `.github/workflows/release.yml` builds the canister and publishes these assets.
