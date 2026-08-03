@@ -2,7 +2,7 @@
   "name": "vc_issuer",
   "type": "module",
   "private": true,
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "@icp-sdk/auth": "^4.2.0",
     "@icp-sdk/core": "^4.2.3",

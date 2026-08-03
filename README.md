@@ -109,3 +109,15 @@ configured to match the environment, i.e. it has to use the correct root public
 key, and accept requests from the correct II canister — see the
 [`provision` script](./provision) for details. `icp.yaml.example` shows a minimal
 icp-cli project that builds and provisions the issuer alongside a remote II.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Security issues are handled through the
+process in [SECURITY.md](SECURITY.md) — please do not report them as public
+issues.
+
+## License
+
+This project is licensed under the Internet Computer Community Source License
+v1.0, the same license as [Internet Identity](https://github.com/dfinity/internet-identity).
+See [LICENSE](LICENSE).
