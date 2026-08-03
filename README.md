@@ -92,11 +92,12 @@ git push origin release-2026-08-03
 `.github/workflows/release.yml` builds the canister and publishes these assets.
 The names are part of the contract with Internet Identity and must not change:
 
-| Asset                    | Consumed by                                                                        |
-| ------------------------ | ---------------------------------------------------------------------------------- |
-| `vc_demo_issuer.wasm.gz` | II's mainnet deploy job and local `icp deploy issuer`.                             |
-| `SHA256SUMS`             | Integrity check for every asset above, verified in II's `scripts/fetch-vc-issuer`. |
-| `vc_demo_issuer.did`     | II's `didc bind` codegen for the issuer's JS/TS types.                             |
+| Asset                           | Consumed by                                                                        |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| `vc_demo_issuer.wasm.gz`        | II's mainnet deploy job and local `icp deploy issuer`.                             |
+| `vc_demo_issuer.wasm.gz.sha256` | Integrity check for the wasm, verified in II's `scripts/fetch-vc-issuer`.          |
+| `vc_demo_issuer.did`            | II's `didc bind` codegen for the issuer's JS/TS types.                             |
+| `vc_demo_issuer.did.sha256`     | Integrity check for the did, verified in II's `scripts/fetch-vc-issuer`.           
 
 After a release, II's scheduled bump workflow opens a pull request moving
 `.github/versions/vc-issuer` to the new tag, refreshing II's vendored copy of
