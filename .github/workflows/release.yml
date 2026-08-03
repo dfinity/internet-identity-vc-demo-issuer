@@ -26,12 +26,14 @@ jobs:
       - name: "Build VC issuer canister"
         run: ./build.sh
 
-      # Both assets are checksummed so Internet Identity can verify what it
-      # downloads.
+      # One `<asset>.sha256` per asset, matching the convention of the
+      # internet-identity releases that consume these.
       - name: "Checksums"
         run: |
-          shasum -a 256 vc_demo_issuer.wasm.gz vc_demo_issuer.did > SHA256SUMS
-          cat SHA256SUMS
+          for asset in vc_demo_issuer.wasm.gz vc_demo_issuer.did; do
+            shasum -a 256 "$asset" > "$asset.sha256"
+            cat "$asset.sha256"
+          done
 
       - name: "Publish release"
         if: startsWith(github.ref, 'refs/tags/release-')
@@ -43,5 +45,6 @@ jobs:
             --title "${GITHUB_REF_NAME}" \
             --generate-notes \
             vc_demo_issuer.wasm.gz \
+            vc_demo_issuer.wasm.gz.sha256 \
             vc_demo_issuer.did \
-            SHA256SUMS
+            vc_demo_issuer.did.sha256
